@@ -1,6 +1,7 @@
 # LLM API Conversation Viewer
 
 A simple, standalone HTML viewer for displaying JSON conversation exports from LLM API applications in a clean, readable format.
+Designed for use with the [My API Chat application](https://github.com/mbbrinkman/my_api_chat) from [Michael Brinkman](https://github.com/mbbrinkman)
 
 ## Features
 
@@ -44,6 +45,7 @@ This viewer expects JSON files with the following structure:
 
 ## Technical Details
 
+- Intended for use with the json files exported from [Michael Brinkman's API Chat application](https://github.com/mbbrinkman/my_api_chat)
 - **Dependencies**: Uses [marked.js](https://marked.js.org/) CDN for markdown parsing
 - **Browser Compatibility**: Works in all modern browsers (no server required)
 - **File Processing**: Uses JavaScript FileReader API for client-side file reading
