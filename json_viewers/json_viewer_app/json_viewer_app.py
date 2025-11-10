@@ -110,10 +110,16 @@ def display_conversation(data):
         
         text_area.insert(tk.END, "-" * 80 + "\n")
         
+        # Remove model name prefix if it exists (e.g., "[xAI: Grok 4 Fast]: ")
+        cleaned_content = content
+        model_prefix_match = re.match(r'^\[([^\]]+)\]:\s*', cleaned_content)
+        if model_prefix_match:
+            cleaned_content = cleaned_content[len(model_prefix_match.group(0)):]
+
         # Clean and display the content
-        cleaned_content = strip_markdown(content)
-        text_area.insert(tk.END, cleaned_content + "\n\n")
-    
+        cleaned_content = strip_markdown(cleaned_content)
+        text_area.insert(tk.END, cleaned_content + "\n\n")   
+
     # Make read-only again
     text_area.config(state=tk.DISABLED)
     
