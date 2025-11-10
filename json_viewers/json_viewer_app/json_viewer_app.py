@@ -15,7 +15,7 @@ text_area = scrolledtext.ScrolledText(
     wrap=tk.WORD,  # Wrap text at word boundaries
     width=100,
     height=40,
-    font=("Arial", 11),
+    font=("Arial", 14),
     padx=10,
     pady=10
 )
