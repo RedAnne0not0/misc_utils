@@ -17,7 +17,10 @@ text_area = scrolledtext.ScrolledText(
     height=40,
     font=("Arial", 14),
     padx=10,
-    pady=10
+    pady=10,
+    bg="#f5f5f5",  # Light gray background
+    fg="#333333",  # Dark gray text
+    insertbackground="#333333"  # Cursor color
 )
 text_area.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
