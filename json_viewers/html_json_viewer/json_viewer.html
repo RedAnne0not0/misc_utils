@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LLM API conversation viewer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    
+    .json-file-upload {
+      display: block;
+      text-align: center;
+      margin: 20px 0;
+      padding: 20px;
+      background-color: white;
+      border: 2px dashed #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    
+    .json-file-upload:hover {
+      border-color: #666;
+      background-color: #fafafa;
+    }
+    
+    .container {
+      background-color: white;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .message {
+      margin: 15px 0;
+      padding: 12px;
+      border-radius: 8px;
+    }
+    
+    .user {
+      background-color: #e3f2fd;
+      border-left: 4px solid #2196f3;
+    }
+    
+    .assistant {
+      background-color: #f1f8e9;
+      border-left: 4px solid #8bc34a;
+    }
+    
+    .model-name {
+      font-weight: bold;
+      color: #555;
+      font-size: 0.9em;
+      margin-bottom: 5px;
+    }
+    
+    .timestamp {
+      font-size: 0.8em;
+      color: #888;
+      margin-top: 5px;
+    }
+    .message h3 {
+      margin-top: 10px;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .message ul, .message ol {
+      margin: 10px 0;
+      padding-left: 25px;
+    }
+
+    .message li {
+      margin: 5px 0;
+    }
+
+    .message p {
+      margin: 10px 0;
+      line-height: 1.6;
+    }
+
+    .message code {
+      background-color: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+    }
+
+    .message pre {
+      background-color: #f4f4f4;
+      padding: 10px;
+      border-radius: 5px;
+      overflow-x: auto;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>  
+</head>
+<body>
+  <h1>LLM API Conversation Viewer</h1>  
+  <label class="json-file-upload">
+      <input type="file" accept=".json" />
+  </label>
+  <div class="container">
+  </div>
+  <script>
+  // Get references to our HTML elements
+  const fileInput = document.querySelector('input[type="file"]');
+  const container = document.querySelector('.container');
+  
+  // Listen for when user selects a file
+  fileInput.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    
+    if (file) {
+      // Create a FileReader to read the file
+      const reader = new FileReader();
+      
+      // This function runs when the file is loaded
+      reader.onload = function(e) {
+        try {
+          // Parse the JSON
+          const data = JSON.parse(e.target.result);
+          
+          // Display the conversation
+          displayConversation(data);
+        } catch (error) {
+          container.innerHTML = '<p style="color: red;">Error: Invalid JSON file</p>';
+        }
+      };
+      
+      // Start reading the file as text
+      reader.readAsText(file);
+    }
+  });
+  
+  // Function to display the conversation
+ function displayConversation(data) {
+  // Clear any existing content
+  container.innerHTML = '';
+  
+  // Loop through each message in the conversation
+  data.conversation.forEach(function(message) {
+    // Create a div for this message
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message ' + message.role;
+    
+    // Add model name if it's an assistant message
+    if (message.role === 'assistant' && message.modelName) {
+      const modelNameDiv = document.createElement('div');
+      modelNameDiv.className = 'model-name';
+      modelNameDiv.textContent = message.modelName;
+      messageDiv.appendChild(modelNameDiv);
+    }
+    
+    // Add the message content - PREPROCESS then CONVERT MARKDOWN TO HTML
+    const contentDiv = document.createElement('div');
+
+    // Preprocess: Handle model name prefixes that look like [Model: Name]:
+    let processedContent = message.content;
+
+    // Check if content starts with a model name in brackets
+    const modelPrefixMatch = processedContent.match(/^\[([^\]]+)\]:\s*/);
+    if (modelPrefixMatch) {
+      // Extract the model name and remove it from content
+      const extractedModel = modelPrefixMatch[1];
+      processedContent = processedContent.substring(modelPrefixMatch[0].length);
+      
+      // If there's no modelName field, or we want to show this prefix, add it as a separate element
+      if (!message.modelName || message.modelName !== extractedModel) {
+        const prefixDiv = document.createElement('div');
+        prefixDiv.className = 'model-name';
+        prefixDiv.textContent = extractedModel;
+        messageDiv.appendChild(prefixDiv);
+      }
+    }
+
+    // Now parse the markdown
+    contentDiv.innerHTML = marked.parse(processedContent);
+    messageDiv.appendChild(contentDiv);  
+
+    // Add timestamp if available
+    if (message.timestamp) {
+      const timestampDiv = document.createElement('div');
+      timestampDiv.className = 'timestamp';
+      timestampDiv.textContent = new Date(message.timestamp).toLocaleString();
+      messageDiv.appendChild(timestampDiv);
+    }
+    
+    // Add this message to the container
+    container.appendChild(messageDiv);
+  });
+}
+</script>
+</body>
+</html>
