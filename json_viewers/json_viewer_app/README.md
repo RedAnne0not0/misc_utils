@@ -13,7 +13,7 @@ A native macOS desktop application for viewing JSON conversation exports from LL
 
 ## System Requirements
 
-- macOS (developed and tested on macOS Sequoia 15.1 with M2 chip)
+- macOS (developed and tested on macOS Tahoe 26.1 with M2 chip)
 - Python 3.11+ (for building from source)
 
 ## Installation
